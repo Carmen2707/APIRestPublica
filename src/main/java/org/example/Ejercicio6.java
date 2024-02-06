@@ -17,7 +17,8 @@ public class Ejercicio6 {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        JSONObject jsObject= new JSONObject(response.body());
-        System.out.println(jsObject.toString(2));    }
+        JSONObject jsObject = new JSONObject(response.body());
+        System.out.println(jsObject.toString(2));
+    }
 
 }
