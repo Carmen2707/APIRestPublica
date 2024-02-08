@@ -18,6 +18,8 @@ public class Ejercicio5 {
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         JSONObject jsObject = new JSONObject(response.body());
-        System.out.println(jsObject.toString(2));
+        int cantidad = jsObject.getJSONArray("results").length();
+
+        System.out.println("En el año 1982 hay registradas " + cantidad + " películas");
     }
 }

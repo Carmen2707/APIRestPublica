@@ -1,5 +1,6 @@
 package org.example;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -9,14 +10,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class Ejercicio2 {
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
 
-        System.out.println(getPosterUrl());
-
-
+        System.out.println(getPosterUrl(getFirstSeriesId()));
     }
 
-    public static String getFirstSeriesId() {
+    private static String getFirstSeriesId() {
         String serieId = "";
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -26,19 +25,29 @@ public class Ejercicio2 {
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            JSONObject jsObject = new JSONObject(response.body());
-            System.out.println(jsObject.toString(2));
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            JSONObject jsonResponse = new JSONObject(response.body());
+            JSONArray jsonArray = jsonResponse.getJSONArray("results");
+
+            //for para encontrar la serie con en titulo "Dragon Ball"
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject serie = jsonArray.getJSONObject(i);
+                String title = serie.getString("title");
+                if ("Dragon Ball".equalsIgnoreCase(title)) {
+                    serieId = serie.getString("imdb_id");
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return serieId;
     }
 
-    public static JSONObject getPosterUrl() {
+    public static JSONObject getPosterUrl(String serieId) {
         JSONObject jsonObject = new JSONObject();
         try {
             HttpRequest request1 = HttpRequest.newBuilder()
-                    .uri(URI.create("https://moviesminidatabase.p.rapidapi.com/series/id/tt0111976/"))
+                    .uri(URI.create("https://moviesminidatabase.p.rapidapi.com/series/id/" + serieId + "/"))
                     .header("X-RapidAPI-Key", "d904802967msh879ea48d1ec1f0cp1575adjsn97b6acff64a9")
                     .header("X-RapidAPI-Host", "moviesminidatabase.p.rapidapi.com")
                     .method("GET", HttpRequest.BodyPublishers.noBody())
@@ -47,10 +56,8 @@ public class Ejercicio2 {
 
             JSONObject jsObject1 = new JSONObject(response1.body());
 
-            int startYear = jsObject1.getJSONObject("results").getInt("start_year");
             String bannerUrl = jsObject1.getJSONObject("results").getString("banner");
 
-            System.out.println("start_year: " + startYear);
             System.out.print("banner: " + bannerUrl);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
