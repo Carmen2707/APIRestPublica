@@ -1,5 +1,7 @@
 package org.example;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,7 +18,13 @@ public class Ejercicio1 {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.body());
+        JSONObject jsObject = new JSONObject(response.body());
 
+
+        int cantidad = jsObject.getJSONArray("results").length();
+
+        System.out.println("Hay " + cantidad + " series de Dragon Ball.");
+        System.out.println(jsObject.toString(2));
     }
-}
+    }
+
